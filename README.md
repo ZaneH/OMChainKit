@@ -18,7 +18,7 @@ Use the error argument to see what the error was.
 > **`- (void)successfullyCreatedOmnicoinAddressWithAddress:(NSString *)address`**: Called whenever a new Omnicoin address was created. Use the address argument to see the address of the newly created address.
 
 ## Current Methods
-### OMChainWallet
+#### OMChainWallet
 > **`- (instancetype)initWithUsername:(NSString *)username password:(NSString *)password delegate:(id<OMChainDelegate>)delegate`**: Used to create a new `OMChainWallet` object. The delegate is a required argument because of how imporant delegates are to this wrapper. Username and password should both be passed in plain text.
 
 -
