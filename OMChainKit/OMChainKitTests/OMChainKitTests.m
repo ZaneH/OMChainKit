@@ -8,8 +8,11 @@
 
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
+#import "OMChainWallet.h"
 
 @interface OMChainKitTests : XCTestCase
+
+@property (nonatomic, strong) OMChainWallet *blankWallet;
 
 @end
 
@@ -17,24 +20,28 @@
 
 - (void)setUp {
     [super setUp];
-    // Put setup code here. This method is called before the invocation of each test method in the class.
+	_blankWallet = [[OMChainWallet alloc] init];
+}
+
+- (void)test_blankWallet_hasBlankValues {
+	XCTAssert([self.blankWallet.username isEqualToString:@""]);
+	XCTAssert([self.blankWallet.passwordHash isEqualToString:@""]);
+	XCTAssert([self.blankWallet.emailAddress isEqualToString:@""]);
+	
+	XCTAssert(self.blankWallet.transactions.count == 0);
+	XCTAssert(self.blankWallet.addresses.count == 0);
+	
+	XCTAssert(self.blankWallet.transactionsIn == 0);
+	XCTAssert(self.blankWallet.transactionsOut == 0);
+	XCTAssert(self.blankWallet.totalIn == 0);
+	XCTAssert(self.blankWallet.totalOut == 0);
+	XCTAssert(self.blankWallet.balance == 0);
+	XCTAssert(self.blankWallet.pendingBalance == 0);
+	XCTAssert(self.blankWallet.version == 0);
 }
 
 - (void)tearDown {
-    // Put teardown code here. This method is called after the invocation of each test method in the class.
     [super tearDown];
-}
-
-- (void)testExample {
-    // This is an example of a functional test case.
-    XCTAssert(YES, @"Pass");
-}
-
-- (void)testPerformanceExample {
-    // This is an example of a performance test case.
-    [self measureBlock:^{
-        // Put the code you want to measure the time of here.
-    }];
 }
 
 @end

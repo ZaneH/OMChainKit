@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2F375A451AB618DA0063FE80 /* OMChainAddress.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F375A441AB618DA0063FE80 /* OMChainAddress.m */; };
 		2F38B2511AB53B1D0068E871 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F38B2501AB53B1D0068E871 /* main.m */; };
 		2F38B2541AB53B1D0068E871 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F38B2531AB53B1D0068E871 /* AppDelegate.m */; };
 		2F38B2571AB53B1D0068E871 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F38B2561AB53B1D0068E871 /* ViewController.m */; };
@@ -14,6 +15,8 @@
 		2F38B25C1AB53B1D0068E871 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2F38B25B1AB53B1D0068E871 /* Images.xcassets */; };
 		2F38B25F1AB53B1D0068E871 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2F38B25D1AB53B1D0068E871 /* LaunchScreen.xib */; };
 		2F38B26B1AB53B1D0068E871 /* OMChainKitTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F38B26A1AB53B1D0068E871 /* OMChainKitTests.m */; };
+		2F38B2761AB5E8D20068E871 /* OMChainWallet.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F38B2751AB5E8D20068E871 /* OMChainWallet.m */; };
+		2FEBA1571AB606E500C14679 /* OMChainTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = 2FEBA1561AB606E500C14679 /* OMChainTransaction.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -27,6 +30,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2F375A431AB618DA0063FE80 /* OMChainAddress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OMChainAddress.h; path = Source/OMChainAddress.h; sourceTree = "<group>"; };
+		2F375A441AB618DA0063FE80 /* OMChainAddress.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OMChainAddress.m; path = Source/OMChainAddress.m; sourceTree = "<group>"; };
 		2F38B24B1AB53B1D0068E871 /* OMChainKit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OMChainKit.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2F38B24F1AB53B1D0068E871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2F38B2501AB53B1D0068E871 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -40,6 +45,10 @@
 		2F38B2641AB53B1D0068E871 /* OMChainKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OMChainKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2F38B2691AB53B1D0068E871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2F38B26A1AB53B1D0068E871 /* OMChainKitTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OMChainKitTests.m; sourceTree = "<group>"; };
+		2F38B2741AB5E8D20068E871 /* OMChainWallet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OMChainWallet.h; path = Source/OMChainWallet.h; sourceTree = "<group>"; };
+		2F38B2751AB5E8D20068E871 /* OMChainWallet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OMChainWallet.m; path = Source/OMChainWallet.m; sourceTree = "<group>"; };
+		2FEBA1551AB606E500C14679 /* OMChainTransaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OMChainTransaction.h; path = Source/OMChainTransaction.h; sourceTree = "<group>"; };
+		2FEBA1561AB606E500C14679 /* OMChainTransaction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OMChainTransaction.m; path = Source/OMChainTransaction.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +69,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2F375A461AB618E00063FE80 /* OMChainAddress */ = {
+			isa = PBXGroup;
+			children = (
+				2F375A431AB618DA0063FE80 /* OMChainAddress.h */,
+				2F375A441AB618DA0063FE80 /* OMChainAddress.m */,
+			);
+			name = OMChainAddress;
+			sourceTree = "<group>";
+		};
 		2F38B2421AB53B1D0068E871 = {
 			isa = PBXGroup;
 			children = (
@@ -81,6 +99,7 @@
 		2F38B24D1AB53B1D0068E871 /* OMChainKit */ = {
 			isa = PBXGroup;
 			children = (
+				2F38B2771AB5E8D50068E871 /* Source */,
 				2F38B2521AB53B1D0068E871 /* AppDelegate.h */,
 				2F38B2531AB53B1D0068E871 /* AppDelegate.m */,
 				2F38B2551AB53B1D0068E871 /* ViewController.h */,
@@ -117,6 +136,34 @@
 				2F38B2691AB53B1D0068E871 /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		2F38B2771AB5E8D50068E871 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				2F38B2781AB5E8E10068E871 /* OMChainWallet */,
+			);
+			name = Source;
+			sourceTree = "<group>";
+		};
+		2F38B2781AB5E8E10068E871 /* OMChainWallet */ = {
+			isa = PBXGroup;
+			children = (
+				2FEBA1581AB606E900C14679 /* OMChainTransaction */,
+				2F375A461AB618E00063FE80 /* OMChainAddress */,
+				2F38B2741AB5E8D20068E871 /* OMChainWallet.h */,
+				2F38B2751AB5E8D20068E871 /* OMChainWallet.m */,
+			);
+			name = OMChainWallet;
+			sourceTree = "<group>";
+		};
+		2FEBA1581AB606E900C14679 /* OMChainTransaction */ = {
+			isa = PBXGroup;
+			children = (
+				2FEBA1551AB606E500C14679 /* OMChainTransaction.h */,
+				2FEBA1561AB606E500C14679 /* OMChainTransaction.m */,
+			);
+			name = OMChainTransaction;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -220,8 +267,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2F375A451AB618DA0063FE80 /* OMChainAddress.m in Sources */,
 				2F38B2571AB53B1D0068E871 /* ViewController.m in Sources */,
 				2F38B2541AB53B1D0068E871 /* AppDelegate.m in Sources */,
+				2FEBA1571AB606E500C14679 /* OMChainTransaction.m in Sources */,
+				2F38B2761AB5E8D20068E871 /* OMChainWallet.m in Sources */,
 				2F38B2511AB53B1D0068E871 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -417,6 +467,7 @@
 				2F38B2701AB53B1D0068E871 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		2F38B2711AB53B1D0068E871 /* Build configuration list for PBXNativeTarget "OMChainKitTests" */ = {
 			isa = XCConfigurationList;
@@ -425,6 +476,7 @@
 				2F38B2731AB53B1D0068E871 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
