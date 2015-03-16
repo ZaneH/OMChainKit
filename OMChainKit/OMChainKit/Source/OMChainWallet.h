@@ -196,7 +196,7 @@
  *  @param address Address to send Omnicoin to
  *  @param amount  The amount of Omnicoin to send to the address
  */
-- (void)sendOmnicoinWithAddress:(NSString *)address amount:(double)amount;
+- (void)sendOmnicoinToAddress:(NSString *)address amount:(double)amount;
 
 /**
  *  Generates a new Omnicoin address
@@ -236,6 +236,11 @@
  */
 - (void)signedMessageSuccessfullyWithAddress:(NSString *)address message:(NSString *)message signature:(NSString *)signature;
 
+/**
+ *  Called whenever an address is successfully created
+ *
+ *  @param address The address that was created
+ */
 - (void)successfullyCreatedOmnicoinAddressWithAddress:(NSString *)address;
 
 @end

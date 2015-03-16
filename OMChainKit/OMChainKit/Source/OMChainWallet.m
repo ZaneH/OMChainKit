@@ -140,7 +140,7 @@
 									   @"privkey":privateKey}];
 }
 
-- (void)sendOmnicoinWithAddress:(NSString *)address amount:(double)amount {
+- (void)sendOmnicoinToAddress:(NSString *)address amount:(double)amount {
 	[self createAPIRequestWithMethod:@"wallet_send"
 							  params:@{@"username":self.username,
 									   @"password":self.sessionToken,
