@@ -103,4 +103,4 @@ Use the error argument to see what the error was.
 
 -
 
-> **`- (void)omcCalculateEarningsWithHashrate:(double)hashrate difficulty:(double)difficulty**`: The earningscalc method returns the amount of OMC that will be mined with the specified hashrate and difficulty ([earningscalc](https://omnicha.in/api#earningscalc-docs))
+> **`- (void)omcCalculateEarningsWithHashrate:(double)hashrate difficulty:(double)difficulty`**: The earningscalc method returns the amount of OMC that will be mined with the specified hashrate and difficulty ([earningscalc](https://omnicha.in/api#earningscalc-docs))
