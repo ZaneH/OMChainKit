@@ -15,6 +15,10 @@
 	// Used for the signed message delegate
 	NSString *_tempAddress;
 	NSString *_tempMessage;
+	NSString *_tempSignature;
+	
+	double _tempHashrate;
+	double _tempDifficulty;
 	
 	NSTimeInterval _timeOutInterval;
 }
@@ -72,6 +76,59 @@
 
 - (void)setTimout:(NSUInteger)timeOut {
 	_timeOutInterval = timeOut;
+}
+
+#pragma mark - Mostly Statistics API Interaction Method Declarations
+
+- (void)omcGetInfo {
+	[self createAPIRequestWithMethod:@"getinfo"
+							  params:@{}];
+}
+
+- (void)omcGetBalanceWithAddress:(NSString *)address {
+	_tempAddress = address;
+	[self createAPIRequestWithMethod:@"getbalance"
+							  params:@{@"address":address}];
+}
+
+- (void)omcCheckAddressWithAddress:(NSString *)address {
+	_tempAddress = address;
+	[self createAPIRequestWithMethod:@"checkaddress"
+							  params:@{@"address":address}];
+}
+
+- (void)omcVerifyMessageWithAddress:(NSString *)address message:(NSString *)message signature:(NSString *)signature {
+	_tempAddress = address;
+	_tempSignature = signature;
+	_tempMessage = message;
+	[self createAPIRequestWithMethod:@"verifymessage"
+							  params:@{@"address":address,
+									   @"message":message,
+									   @"signature":signature}];
+}
+
+- (void)omcGetRichList {
+	[self createAPIRequestWithMethod:@"getrichlist"
+							  params:@{}];
+}
+
+- (void)omcGetStats {
+	[self createAPIRequestWithMethod:@"getwstats"
+							  params:@{}];
+}
+
+- (void)omcCalculateEarningsWithHashrate:(double)hashrate {
+	_tempHashrate = hashrate;
+	[self createAPIRequestWithMethod:@"earningscalc"
+							  params:@{@"hashrate":[NSNumber numberWithDouble:hashrate]}];
+}
+
+- (void)omcCalculateEarningsWithHashrate:(double)hashrate difficulty:(double)difficulty {
+	_tempHashrate = hashrate;
+	_tempDifficulty = difficulty;
+	[self createAPIRequestWithMethod:@"earningscalc"
+							  params:@{@"hashrate":[NSNumber numberWithDouble:hashrate],
+									   @"difficulty":[NSNumber numberWithDouble:difficulty]}];
 }
 
 #pragma mark -
@@ -178,8 +235,9 @@
 		requestString = [requestString stringByAppendingString:[NSString stringWithFormat:@"&%@=%@", keys[keyIndex], values[keyIndex]]];
 	}
 	
+	NSURL *requestURL = [NSURL URLWithString:[[NSString stringWithFormat:@"https://omnicha.in/api?method=%@%@", method, requestString] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
 	NSMutableURLRequest *callMethodRequest = [[NSMutableURLRequest alloc]
-											  initWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://omnicha.in/api?method=%@%@", method, requestString]]
+											  initWithURL:requestURL
 											  cachePolicy:NSURLRequestUseProtocolCachePolicy
 											  timeoutInterval:_timeOutInterval];
 	[callMethodRequest setHTTPMethod:@"GET"];
@@ -192,7 +250,8 @@
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
 	// sets session token & checks login
-	if ([[connection.currentRequest.URL.query substringWithRange:NSMakeRange(0, 19)] isEqualToString:@"method=wallet_login"]) {
+	NSString *methodSubString = connection.currentRequest.URL.query.length >= 19 ? [connection.currentRequest.URL.query substringWithRange:NSMakeRange(0, 19)] : @"";
+	if ([methodSubString isEqualToString:@"method=wallet_login"]) {
 		NSError *error = nil;
 		id jsonObject = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error];
 		// check if json is valid
@@ -210,10 +269,12 @@
 		}
 		[self.delegate omnichainSucceededWithWallet:self method:@"wallet_login"];
 		[self getWalletInfo];
+		return;
 	}
 	
+	methodSubString = connection.currentRequest.URL.query.length >= 21 ? [connection.currentRequest.URL.query substringWithRange:NSMakeRange(0, 21)] : @"";
 	// sets transactions out, total out, transactions in, total in, balance, pending balance, transactions, addresses, & omcUSDValue
-	if ([[connection.currentRequest.URL.query substringWithRange:NSMakeRange(0, 21)] isEqualToString:@"method=wallet_getinfo"]) {
+	if ([methodSubString isEqualToString:@"method=wallet_getinfo"]) {
 		NSError *error = nil;
 		id jsonObject = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error];
 		// check if json is valid
@@ -257,10 +318,12 @@
 			return;
 		}
 		[self.delegate omnichainSucceededWithWallet:self method:@"wallet_getinfo"];
+		return;
 	}
 	
+	methodSubString = connection.currentRequest.URL.query.length >= 22 ? [connection.currentRequest.URL.query substringWithRange:NSMakeRange(0, 22)] : @"";
 	// creates a user on Omnicha.in
-	if ([[connection.currentRequest.URL.query substringWithRange:NSMakeRange(0, 22)] isEqualToString:@"method=wallet_register"]) {
+	if ([methodSubString isEqualToString:@"method=wallet_register"]) {
 		NSError *error = nil;
 		id jsonObject = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error];
 		// check if json is valid
@@ -272,12 +335,15 @@
 			}
 		} else {
 			[self.delegate omnichainFailedWithWallet:self error:@"API_CHANGED"];
+			return;
 		}
 		[self.delegate omnichainSucceededWithWallet:self method:@"wallet_register"];
+		return;
 	}
 	
+	methodSubString = connection.currentRequest.URL.query.length >= 26 ? [connection.currentRequest.URL.query substringWithRange:NSMakeRange(0, 26)] : @"";
 	// changes users email address
-	if ([[connection.currentRequest.URL.query substringWithRange:NSMakeRange(0, 26)] isEqualToString:@"method=wallet_changeemail"]) {
+	if ([methodSubString isEqualToString:@"method=wallet_changeemail"]) {
 		NSError *error = nil;
 		id jsonObject = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error];
 		// check if json is valid
@@ -291,12 +357,15 @@
 			self.emailAddress = _potentialEmail;
 		} else {
 			[self.delegate omnichainFailedWithWallet:self error:@"API_CHANGED"];
+			return;
 		}
 		[self.delegate omnichainSucceededWithWallet:self method:@"wallet_changeemail"];
+		return;
 	}
 	
+	methodSubString = connection.currentRequest.URL.query.length >= 28 ? [connection.currentRequest.URL.query substringWithRange:NSMakeRange(0, 28)] : @"";
 	// changes the users password
-	if ([[connection.currentRequest.URL.query substringWithRange:NSMakeRange(0, 28)] isEqualToString:@"method=wallet_changepassword"]) {
+	if ([methodSubString isEqualToString:@"method=wallet_changepassword"]) {
 		NSError *error = nil;
 		id jsonObject = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error];
 		// check if json is valid
@@ -310,12 +379,15 @@
 			self.passwordHash = _potentialPassword;
 		} else {
 			[self.delegate omnichainFailedWithWallet:self error:@"API_CHANGED"];
+			return;
 		}
 		[self.delegate omnichainSucceededWithWallet:self method:@"wallet_changepassword"];
+		return;
 	}
 	
+	methodSubString = connection.currentRequest.URL.query.length >= 25 ? [connection.currentRequest.URL.query substringWithRange:NSMakeRange(0, 25)] : @"";
 	// signs a message to an address (I have no idea what this is tbh, but it was in the API and I needed to add it)
-	if ([[connection.currentRequest.URL.query substringWithRange:NSMakeRange(0, 25)] isEqualToString:@"method=wallet_signmessage"]) {
+	if ([methodSubString isEqualToString:@"method=wallet_signmessage"]) {
 		NSError *error = nil;
 		id jsonObject = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error];
 		// check if json is valid
@@ -327,13 +399,16 @@
 			}
 		} else {
 			[self.delegate omnichainFailedWithWallet:self error:@"API_CHANGED"];
+			return;
 		}
 		[self.delegate signedMessageSuccessfullyWithAddress:_tempAddress message:_tempMessage signature:[[jsonObject valueForKey:@"response"] valueForKey:@"signature"]];
 		[self.delegate omnichainSucceededWithWallet:self method:@"wallet_signmessage"];
+		return;
 	}
 	
+	methodSubString = connection.currentRequest.URL.query.length >= 23 ? [connection.currentRequest.URL.query substringWithRange:NSMakeRange(0, 23)] : @"";
 	// imports a previously generated address into Omnicha.in
-	if ([[connection.currentRequest.URL.query substringWithRange:NSMakeRange(0, 23)] isEqualToString:@"method=wallet_importkey"]) {
+	if ([methodSubString isEqualToString:@"method=wallet_importkey"]) {
 		NSError *error = nil;
 		id jsonObject = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error];
 		// check if json is valid
@@ -345,12 +420,15 @@
 			}
 		} else {
 			[self.delegate omnichainFailedWithWallet:self error:@"API_CHANGED"];
+			return;
 		}
 		[self.delegate omnichainSucceededWithWallet:self method:@"wallet_importkey"];
+		return;
 	}
 	
+	methodSubString = connection.currentRequest.URL.query.length >= 21 ? [connection.currentRequest.URL.query substringWithRange:NSMakeRange(0, 21)] : @"";
 	// generates a new address on Omnicha.in
-	if ([[connection.currentRequest.URL.query substringWithRange:NSMakeRange(0, 21)] isEqualToString:@"method=wallet_genaddr"]) {
+	if ([methodSubString isEqualToString:@"method=wallet_genaddr"]) {
 		NSError *error = nil;
 		id jsonObject = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error];
 		// check if json is valid
@@ -362,9 +440,192 @@
 			}
 		} else {
 			[self.delegate omnichainFailedWithWallet:self error:@"API_CHANGED"];
+			return;
 		}
 		[self.delegate successfullyCreatedOmnicoinAddressWithAddress:[[jsonObject valueForKey:@"response"] valueForKey:@"address"]];
 		[self.delegate omnichainSucceededWithWallet:self method:@"wallet_genaddr"];
+		return;
+	}
+	
+	methodSubString = connection.currentRequest.URL.query.length >= 14 ? [connection.currentRequest.URL.query substringWithRange:NSMakeRange(0, 14)] : @"";
+	// returns misc information like difficulty, mining speed, and average block time
+	if ([methodSubString isEqualToString:@"method=getinfo"]) {
+		NSError *error = nil;
+		id jsonObject = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error];
+		// check if json is valid
+		if (!error) {
+			// check if request is valid
+			if ([[jsonObject valueForKey:@"error"] boolValue] == 1) {
+				[self.delegate omnichainFailedWithWallet:self error:[jsonObject valueForKey:@"error_info"]];
+				return;
+			}
+			NSDictionary *infoDictionary = @{@"block_count":[NSNumber numberWithInteger:[[[jsonObject valueForKey:@"response"] valueForKey:@"block_count"] integerValue]],
+											 @"difficulty":[NSNumber numberWithDouble:[[[jsonObject valueForKey:@"response"] valueForKey:@"difficulty"] doubleValue]],
+											 @"netmhps":[NSNumber numberWithDouble:[[[jsonObject valueForKey:@"response"] valueForKey:@"netmhps"] doubleValue]],
+											 @"seconds_since_block":[NSNumber numberWithInteger:[[[jsonObject valueForKey:@"response"] valueForKey:@"seconds_since_block"] integerValue]],
+											 @"avg_block_time_1":[NSNumber numberWithDouble:[[[jsonObject valueForKey:@"response"] valueForKey:@"avg_block_time_1"] doubleValue]],
+											 @"avg_block_time_24":[NSNumber numberWithDouble:[[[jsonObject valueForKey:@"response"] valueForKey:@"avg_block_time_24"] doubleValue]],
+											 @"total_mined_omc":[NSNumber numberWithDouble:[[[jsonObject valueForKey:@"response"] valueForKey:@"total_mined_omc"] doubleValue]],
+											 @"omc_btc_price":[NSNumber numberWithDouble:[[[jsonObject valueForKey:@"response"] valueForKey:@"omc_btc_price"] doubleValue]],
+											 @"omc_usd_price":[NSNumber numberWithDouble:[[[jsonObject valueForKey:@"response"] valueForKey:@"omc_usd_price"] doubleValue]],
+											 @"market_cap":[NSNumber numberWithDouble:[[[jsonObject valueForKey:@"response"] valueForKey:@"market_cap"] doubleValue]],
+											 @"block_reward":[NSNumber numberWithDouble:[[[jsonObject valueForKey:@"response"] valueForKey:@"block_reward"] doubleValue]]};
+			[self.delegate gotInfoFromOmnichainSuccessfullyWithData:infoDictionary];
+		} else {
+			[self.delegate omnichainFailedWithWallet:self error:@"getinfo"];
+			return;
+		}
+		[self.delegate omnichainSucceededWithWallet:self method:@"getinfo"];
+		return;
+	}
+	
+	methodSubString = connection.currentRequest.URL.query.length >= @"method=getbalance".length ?
+		[connection.currentRequest.URL.query substringWithRange:NSMakeRange(0, @"method=getbalance".length)] : @"";
+	// gets the balance of said wallet
+	if ([methodSubString isEqualToString:@"method=getbalance"]) {
+		NSError *error = nil;
+		id jsonObject = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error];
+		// check if json is valid
+		if (!error) {
+			// check if request is valid
+			if ([[jsonObject valueForKey:@"error"] boolValue] == 1) {
+				[self.delegate omnichainFailedWithWallet:self error:[jsonObject valueForKey:@"error_info"]];
+				return;
+			}
+			[self.delegate gotBalanceFromOmnichainWithAddress:_tempAddress balance:[[[jsonObject valueForKey:@"response"] valueForKey:@"balance"] doubleValue]];
+		} else {
+			[self.delegate omnichainFailedWithWallet:self error:@"API_CHANGED"];
+			return;
+		}
+		[self.delegate omnichainSucceededWithWallet:self method:@"getbalance"];
+		return;
+	}
+	
+	methodSubString = connection.currentRequest.URL.query.length >= @"method=checkaddress".length ?
+		[connection.currentRequest.URL.query substringWithRange:NSMakeRange(0, @"method=checkaddress".length)] : @"";
+	// checks if said address belongs to a valid wallet
+	if ([methodSubString isEqualToString:@"method=checkaddress"]) {
+		NSError *error = nil;
+		id jsonObject = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error];
+		// check if json is valid
+		if (!error) {
+			// check if request is valid
+			if ([[jsonObject valueForKey:@"error"] boolValue] == 1) {
+				[self.delegate omnichainFailedWithWallet:self error:[jsonObject valueForKey:@"error_info"]];
+				return;
+			}
+			[self.delegate gotIsValidAddressFromOmnichainWithAddress:_tempAddress isValidAddress:[[[jsonObject valueForKey:@"response"] valueForKey:@"isvalid"] boolValue]];
+		} else {
+			[self.delegate omnichainFailedWithWallet:self error:@"API_CHANGED"];
+			return;
+		}
+		[self.delegate omnichainSucceededWithWallet:self method:@"checkaddress"];
+		return;
+	}
+	
+	methodSubString = connection.currentRequest.URL.query.length >= @"method=verifymessage".length ?
+		[connection.currentRequest.URL.query substringWithRange:NSMakeRange(0, @"method=verifymessage".length)] : @"";
+	// checks if said address belongs to a valid wallet
+	if ([methodSubString isEqualToString:@"method=verifymessage"]) {
+		NSError *error = nil;
+		id jsonObject = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error];
+		// check if json is valid
+		if (!error) {
+			// check if request is valid
+			if ([[jsonObject valueForKey:@"error"] boolValue] == 1) {
+				[self.delegate omnichainFailedWithWallet:self error:[jsonObject valueForKey:@"error_info"]];
+				return;
+			}
+			[self.delegate gotIsValidSignedAddressWithAddress:_tempAddress message:_tempMessage signature:_tempSignature isVerified:[[[jsonObject valueForKey:@"response"] valueForKey:@"isvalid"] boolValue]];
+		} else {
+			[self.delegate omnichainFailedWithWallet:self error:@"API_CHANGED"];
+			return;
+		}
+		[self.delegate omnichainSucceededWithWallet:self method:@"verifymessage"];
+		return;
+	}
+	
+	methodSubString = connection.currentRequest.URL.query.length >= @"method=getrichlist".length ?
+	[connection.currentRequest.URL.query substringWithRange:NSMakeRange(0, @"method=getrichlist".length)] : @"";
+	// checks if said address belongs to a valid wallet
+	if ([methodSubString isEqualToString:@"method=getrichlist"]) {
+		NSError *error = nil;
+		id jsonObject = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error];
+		// check if json is valid
+		if (!error) {
+			// check if request is valid
+			if ([[jsonObject valueForKey:@"error"] boolValue] == 1) {
+				[self.delegate omnichainFailedWithWallet:self error:[jsonObject valueForKey:@"error_info"]];
+				return;
+			}
+			// making the rich list ( dictionaries inside an array )
+			NSMutableArray *richList = [NSMutableArray new];
+			for (int personIndex = 0; personIndex < [[[jsonObject valueForKey:@"response"] valueForKey:@"richlist"] count]; personIndex++) {
+				NSDictionary *tempPersonDictionary = @{@"address":[[[[jsonObject valueForKey:@"response"] valueForKey:@"richlist"] objectAtIndex:personIndex] valueForKey:@"address"],
+												 @"balance":[NSNumber numberWithDouble:[[[[[jsonObject valueForKey:@"response"] valueForKey:@"richlist"] objectAtIndex:personIndex] valueForKey:@"balance"] doubleValue]],
+												 @"percent":[NSNumber numberWithDouble:[[[[[jsonObject valueForKey:@"response"] valueForKey:@"richlist"] objectAtIndex:personIndex] valueForKey:@"percent"] doubleValue]],
+												 @"rank":[NSNumber numberWithInteger:[[[[[jsonObject valueForKey:@"response"] valueForKey:@"richlist"] objectAtIndex:personIndex] valueForKey:@"rank"] integerValue]],
+												 @"usd_value":[NSNumber numberWithDouble:[[[[[jsonObject valueForKey:@"response"] valueForKey:@"richlist"] objectAtIndex:personIndex] valueForKey:@"usd_value"] doubleValue]],
+												 @"vanity_name":[[[[jsonObject valueForKey:@"response"] valueForKey:@"richlist"] objectAtIndex:personIndex] valueForKey:@"vanity_name"]};
+				[richList addObject:tempPersonDictionary];
+			}
+			[self.delegate gotRichListFromOmnichainWithData:[NSArray arrayWithArray:richList]];
+		} else {
+			[self.delegate omnichainFailedWithWallet:self error:@"API_CHANGED"];
+			return;
+		}
+		[self.delegate omnichainSucceededWithWallet:self method:@"getrichlist"];
+		return;
+	}
+	
+	methodSubString = connection.currentRequest.URL.query.length >= @"method=getwstats".length ?
+	[connection.currentRequest.URL.query substringWithRange:NSMakeRange(0, @"method=getwstats".length)] : @"";
+	// checks if said address belongs to a valid wallet
+	if ([methodSubString isEqualToString:@"method=getwstats"]) {
+		NSError *error = nil;
+		id jsonObject = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error];
+		// check if json is valid
+		if (!error) {
+			// check if request is valid
+			if ([[jsonObject valueForKey:@"error"] boolValue] == 1) {
+				[self.delegate omnichainFailedWithWallet:self error:[jsonObject valueForKey:@"error_info"]];
+				return;
+			}
+			NSDictionary *statsDictionary = @{@"users":[NSNumber numberWithInteger:[[[jsonObject valueForKey:@"response"] valueForKey:@"users"] integerValue]],
+											  @"balance":[NSNumber numberWithDouble:[[[jsonObject valueForKey:@"response"] valueForKey:@"balance"] doubleValue]]};
+			[self.delegate gotStatsFromOmnichainWithData:statsDictionary];
+		} else {
+			[self.delegate omnichainFailedWithWallet:self error:@"API_CHANGED"];
+			return;
+		}
+		[self.delegate omnichainSucceededWithWallet:self method:@"getwstats"];
+		return;
+	}
+	
+	methodSubString = connection.currentRequest.URL.query.length >= @"method=earningscalc".length ?
+	[connection.currentRequest.URL.query substringWithRange:NSMakeRange(0, @"method=earningscalc".length)] : @"";
+	// checks if said address belongs to a valid wallet
+	if ([methodSubString isEqualToString:@"method=earningscalc"]) {
+		NSError *error = nil;
+		id jsonObject = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error];
+		// check if json is valid
+		if (!error) {
+			// check if request is valid
+			if ([[jsonObject valueForKey:@"error"] boolValue] == 1) {
+				[self.delegate omnichainFailedWithWallet:self error:[jsonObject valueForKey:@"error_info"]];
+				return;
+			}
+			NSDictionary *estimationDictionary = @{@"daily":[NSNumber numberWithDouble:[[[jsonObject valueForKey:@"response"] valueForKey:@"daily"] doubleValue]],
+											  @"weekly":[NSNumber numberWithDouble:[[[jsonObject valueForKey:@"response"] valueForKey:@"weekly"] doubleValue]],
+											  @"monthly":[NSNumber numberWithDouble:[[[jsonObject valueForKey:@"response"] valueForKey:@"monthly"] doubleValue]],
+											  @"yearly":[NSNumber numberWithDouble:[[[jsonObject valueForKey:@"response"] valueForKey:@"yearly"] doubleValue]]};
+			[self.delegate gotCalculatedEarningsFromOmnichainWithHashrate:_tempHashrate difficulty:_tempDifficulty data:estimationDictionary];
+		} else {
+			[self.delegate omnichainFailedWithWallet:self error:@"API_CHANGED"];
+			return;
+		}
+		[self.delegate omnichainSucceededWithWallet:self method:@"earningscalc"];
+		return;
 	}
 }
 

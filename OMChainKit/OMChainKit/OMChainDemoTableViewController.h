@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "OMChainWallet.h"
 
-@interface ViewController : UIViewController <OMChainDelegate>
+@interface OMChainDemoTableViewController : UITableViewController <OMChainDelegate, UITableViewDataSource, UITableViewDelegate>
 
 @end
 
