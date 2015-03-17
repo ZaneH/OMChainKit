@@ -72,3 +72,35 @@ Use the error argument to see what the error was.
 -
 
 > **`- (void)generateNewAddress`**: Creates a new address on Omnicha.in. Limited to 1/minute. Check delegate call for more details. ([wallet_genaddr](https://omnicha.in/api#wallet_genaddr-docs))
+
+-
+
+> **`- (void)omcGetInfo`**: Returns misc information like difficulty, mining speed, and average block time ([getinfo](https://omnicha.in/api#getinfo-docs))
+
+-
+
+> **`- (void)omcGetBalanceWithAddress:(NSString *)address`**: Returns the value of an Omnicoin address ([getbalance](https://omnicha.in/api#getbalance-docs))
+
+-
+
+> **`- (void)omcCheckAddressWithAddress:(NSString *)address`**: A BOOL saying whether it's a real address or not ([checkaddress](https://omnicha.in/api#checkaddress-docs))
+
+-
+
+> **`- (void)omcVerifyMessageWithAddress:(NSString *)address message:(NSString *)message signature:(NSString *)signature`**: Returns whether the specified signature is as valid hash for the specified message for the specified address ([verifymessage](https://omnicha.in/api#verifymessage-docs))
+
+-
+
+> **`- (void)omcGetRichList`**: Returns data for generating the richlist on https://omnicha.in/richlist/ ([getrichlist](https://omnicha.in/api#getrichlist-docs))
+
+-
+
+> **`- (void)omcGetStats`**: Returns total users and total balance of all online wallet accounts ([getwstats](https://omnicha.in/api#getwstats-docs))
+
+-
+
+> **`- (void)omcCalculateEarningsWithHashrate:(double)hashrate`**: Retuns the amount of OMC that will be mined with the specified hashrate ([earningscalc](https://omnicha.in/api#earningscalc-docs))
+
+-
+
+> **`- (void)omcCalculateEarningsWithHashrate:(double)hashrate difficulty:(double)difficulty**`: The earningscalc method returns the amount of OMC that will be mined with the specified hashrate and difficulty ([earningscalc](https://omnicha.in/api#earningscalc-docs))
