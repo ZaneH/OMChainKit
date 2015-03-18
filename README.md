@@ -1,6 +1,30 @@
 # OMChainKit [![Build Status](https://travis-ci.org/ZaneH/OMChainKit.svg?branch=master)](https://travis-ci.org/ZaneH/OMChainKit)
 An API wrapper for https://omnicha.in/api
 
+## Usage
+
+### Cocoapods
+1. Install Cocoapod
+```
+pod 'OMChainKit'
+```
+
+2. Run `pod install`
+
+### Manual Install
+1. Download the .zip file from GitHub
+
+2. Open the `Source` folder and drag all the files into your Xcode project
+
+## Getting Started
+Creating a new `OMChainWallet` object is easy! Simply import your header file, conform your class to the `OMChainDelegate` and add:
+
+    OMChainWallet *wallet = [[OMChainWallet alloc] initWithUsername:@"username" password:@"password" delegate:self];
+
+From there you can send whatever messages you need to your newly created `wallet` object. Make sure your `wallet` object is initialized with a username and password before you start sending `wallet_*` messages; not doing so will result in a crash. To avoid this, put all the code you want to run inside: 
+
+```- (void)omnichainSucceededWithWallet:(OMChainWallet *)wallet method:(NSString *)method```
+
 ## Delegates
 > **`- (void)omnichainSucceededWithWallet:(OMChainWallet *)wallet method:(NSString *)method`**: Called whenever an API request succeeds. Use the method argument to see what the delegate is talking about.
 
