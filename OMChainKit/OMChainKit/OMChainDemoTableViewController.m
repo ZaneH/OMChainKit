@@ -54,13 +54,18 @@
 	
 	// initialize with username and password to login automatically
 	_exampleWallet = [[OMChainWallet alloc] init];
+
 	// also make sure you add a delegate if you want anything to actually work
 	[_exampleWallet setDelegate:self];
 	
 	// Like this!
-	//_exampleWallet = [[OMChainWallet alloc] initWithUsername:@"username"
-	//												password:@"password"
-	//												delegate:self];
+//	_exampleWallet = [[OMChainWallet alloc] initWithUsername:@"username"
+//													password:@"password"
+//													 success:^(OMChainWallet *wallet) {
+//														 
+//													 } failure:^(OMChainWallet *wallet, NSString *error) {
+//														 
+//													 }];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -86,21 +91,51 @@
 		return;
 	}
 	
-	if (indexPath.row == 0) {
-		[_exampleWallet omcGetInfo];
-	} else if (indexPath.row == 1) {
-		[_exampleWallet omcGetBalanceWithAddress:@"oTrArkBbBdsRTAGbher1X9ZmhnHZjMnM1k"];
-	} else if (indexPath.row == 2) {
-		[_exampleWallet omcCheckAddressWithAddress:@"oTrArkBbBdsRTAGbher1X9ZmhnHZjMnM1k"];
-	} else if (indexPath.row == 3) {
-		[_exampleWallet omcVerifyMessageWithAddress:@"oTrArkBbBdsRTAGbher1X9ZmhnHZjMnM1k" message:@"Blank" signature:@"This is an invalid signature!"];
-	} else if (indexPath.row == 4) {
-		[_exampleWallet omcGetRichList];
-	} else if (indexPath.row == 5) {
-		[_exampleWallet omcGetStats];
-	} else if (indexPath.row == 6) {
-		// you obviously shouldn't hardcode hashrate nor difficulty. omcGetInfo can get difficulty for you and your users can provide the hashrate in MH/s
-		[_exampleWallet omcCalculateEarningsWithHashrate:1 difficulty:15.392378990565];
+	switch (indexPath.row) {
+		case 0: {
+			[_exampleWallet omcGetInfoWithCompletionHandler:^(NSDictionary *info) {
+				[[[UIAlertView alloc] initWithTitle:@"Success!" message:info.description delegate:self cancelButtonTitle:@"Dismiss" otherButtonTitles: nil] show];
+			}];
+			break;
+		}
+		case 1: {
+			[_exampleWallet omcGetBalanceWithAddress:@"" completionHandler:^(NSString *address, double balance) {
+				[[[UIAlertView alloc] initWithTitle:@"Success!" message:[NSString stringWithFormat:@"Address: %@\nBalance: %f", address, balance] delegate:self cancelButtonTitle:@"Dismiss" otherButtonTitles: nil] show];
+			}];
+			break;
+		}
+		case 2: {
+			[_exampleWallet omcCheckAddressWithAddress:@"oTrArkBbBdsRTAGbher1X9ZmhnHZjMnM1k" completionHandler:^(NSString *address, BOOL isValid) {
+				[[[UIAlertView alloc] initWithTitle:@"Success!" message:[NSString stringWithFormat:@"Address: %@\nisValid: %d", address, isValid] delegate:self cancelButtonTitle:@"Dismiss" otherButtonTitles: nil] show];
+			}];
+			break;
+		}
+		case 3: {
+			[_exampleWallet omcVerifyMessageWithAddress:@"oTrArkBbBdsRTAGbher1X9ZmhnHZjMnM1k" message:@"Created by ZaneH" signature:@"Fake Signature" completionHandler:^(NSString *address, NSString *message, NSString *signature, BOOL isVerified) {
+				[[[UIAlertView alloc] initWithTitle:@"Success!" message:[NSString stringWithFormat:@"Address: %@\nMessage: %@\nSignature: %@\nisVerified: %d", address, message, signature, isVerified] delegate:self cancelButtonTitle:@"Dismiss" otherButtonTitles: nil] show];
+			}];
+			break;
+		}
+		case 4: {
+			[_exampleWallet omcGetRichListWithCompletionHandler:^(NSArray *richList) {
+				[[[UIAlertView alloc] initWithTitle:@"Success!" message:[NSString stringWithFormat:@"Rich List: %@", richList.description] delegate:self cancelButtonTitle:@"Dismiss" otherButtonTitles: nil] show];
+			}];
+			break;
+		}
+		case 5: {
+			[_exampleWallet omcGetStatsWithCompletionHandler:^(NSDictionary *stats) {
+				[[[UIAlertView alloc] initWithTitle:@"Success!" message:[NSString stringWithFormat:@"Stats: %@", stats.description] delegate:self cancelButtonTitle:@"Dismiss" otherButtonTitles: nil] show];
+			}];
+			break;
+		}
+		case 6: {
+			[_exampleWallet omcCalculateEarningsWithHashrate:34 completionHandler:^(double hashrate, double difficulty, NSDictionary *data) {
+				[[[UIAlertView alloc] initWithTitle:@"Success!" message:[NSString stringWithFormat:@"Hashrate: %f\nDifficulty: %f\nData: %@", hashrate, difficulty, data] delegate:self cancelButtonTitle:@"Dismiss" otherButtonTitles: nil] show];
+			}];
+		}
+		default: {
+			break;
+		}
 	}
 }
 
@@ -108,72 +143,8 @@
 	return _methods.count;
 }
 
-- (void)omnichainSucceededWithWallet:(OMChainWallet *)wallet method:(NSString *)method {
-	NSLog(@"%@ called", method);
-}
-
-- (void)gotBalanceFromOmnichainWithAddress:(NSString *)address balance:(double)balance {
-	[[[UIAlertView alloc] initWithTitle:@"Success"
-								message:[NSString stringWithFormat:@"Address: %@\nBalance: %f", address, balance]
-							   delegate:self
-					  cancelButtonTitle:@"Dismiss"
-					  otherButtonTitles:nil] show];
-}
-
-- (void)gotCalculatedEarningsFromOmnichainWithHashrate:(double)hashrate difficulty:(double)difficulty data:(NSDictionary *)data {
-	[[[UIAlertView alloc] initWithTitle:@"Success"
-								message:[NSString stringWithFormat:@"Hashrate: %f\nDifficulty: %f\nData: %@", hashrate, difficulty, data]
-							   delegate:self
-					  cancelButtonTitle:@"Dismiss"
-					  otherButtonTitles:nil] show];
-}
-
-- (void)gotInfoFromOmnichainSuccessfullyWithData:(NSDictionary *)data {
-	[[[UIAlertView alloc] initWithTitle:@"Success"
-								message:[NSString stringWithFormat:@"Data: %@", data]
-							   delegate:self
-					  cancelButtonTitle:@"Dismiss"
-					  otherButtonTitles:nil] show];
-}
-
-- (void)gotIsValidAddressFromOmnichainWithAddress:(NSString *)address isValidAddress:(BOOL)isValidAddress {
-	[[[UIAlertView alloc] initWithTitle:@"Success"
-								message:[NSString stringWithFormat:@"Address: %@\nisValid: %@", address, (double)isValidAddress == 0 ? @"NO" : @"YES"]
-							   delegate:self
-					  cancelButtonTitle:@"Dismiss"
-					  otherButtonTitles:nil] show];
-}
-
-- (void)gotIsValidSignedAddressWithAddress:(NSString *)address message:(NSString *)message signature:(NSString *)signature isVerified:(BOOL)isVerified {
-	[[[UIAlertView alloc] initWithTitle:@"Success"
-								message:[NSString stringWithFormat:@"Address: %@\nMessage: %@\nSignature: %@\nisVerified: %@", address, message, signature, (double)isVerified == 0 ? @"NO" : @"YES"]
-							   delegate:self
-					  cancelButtonTitle:@"Dismiss"
-					  otherButtonTitles:nil] show];
-}
-
-- (void)gotRichListFromOmnichainWithData:(NSArray *)data {
-	[[[UIAlertView alloc] initWithTitle:@"Success"
-								message:[NSString stringWithFormat:@"Data: %@", [data description]]
-							   delegate:self
-					  cancelButtonTitle:@"Dismiss"
-					  otherButtonTitles:nil] show];
-}
-
-- (void)gotStatsFromOmnichainWithData:(NSDictionary *)data {
-	[[[UIAlertView alloc] initWithTitle:@"Success"
-								message:[NSString stringWithFormat:@"Data: %@", data]
-							   delegate:self
-					  cancelButtonTitle:@"Dismiss"
-					  otherButtonTitles:nil] show];
-}
-
 - (void)omnichainFailedWithWallet:(OMChainWallet *)wallet error:(NSString *)error {
-	[[[UIAlertView alloc] initWithTitle:@"Error"
-								message:error
-							   delegate:self
-					  cancelButtonTitle:@"Dismiss"
-					  otherButtonTitles:nil] show];
+	[[[UIAlertView alloc] initWithTitle:@"Error" message:[NSString stringWithFormat:@"An unexpected error occured when attempting: %@", error] delegate:self cancelButtonTitle:@"Dismiss" otherButtonTitles: nil] show];
 }
 
 @end

@@ -15,6 +15,25 @@
 
 @interface OMChainWallet : NSObject <NSURLConnectionDelegate>
 
+// typedef definitions. Excuse the excess definitions, it's easier for me to be verbose
+typedef void (^SignInSuccess)(OMChainWallet *wallet);
+typedef void (^OmnichainFailed)(OMChainWallet *wallet, NSString *error);
+typedef void (^SignMessageSuccess)(NSString *address, NSString *message, NSString *signature);
+typedef void (^AddressCreateSuccess)(NSString *address);
+typedef void (^GetInfoSuccess)(NSDictionary *data);
+typedef void (^GetBalanceSuccess)(NSString *address, double balance);
+typedef void (^IsValidAddressSuccess)(NSString *address, BOOL isValid);
+typedef void (^IsValidSignatureSuccess)(NSString *address, NSString *message, NSString *signature, BOOL isVerified);
+typedef void (^GetRichListSuccess)(NSArray *data);
+typedef void (^GetStatsSuccess)(NSDictionary *data);
+typedef void (^GetCalculatedEarningsSuccess)(double hashrate, double difficulty, NSDictionary *data);
+
+typedef void (^RegisterSuccess)();
+typedef void (^ChangeEmailSuccess)();
+typedef void (^ChangePasswordSuccess)();
+typedef void (^SendOmnicoinSuccess)();
+typedef void (^GenerateAddressSuccess)(NSString *address);
+
 #pragma mark - Properties
 
 // User Info
@@ -104,7 +123,7 @@
  *
  *  @return A new wallet object
  */
-- (instancetype)initWithUsername:(NSString *)username password:(NSString *)password delegate:(id<OMChainDelegate>)delegate;
+- (instancetype)initWithUsername:(NSString *)username password:(NSString *)password success:(void (^)(OMChainWallet *wallet))successBlock failure:(void (^)(OMChainWallet *wallet, NSString *error))failureBlock;
 
 /**
  *  A method that returns a blank Omnicoin wallet
@@ -126,21 +145,21 @@
 /**
  *  getinfo: Returns misc information like difficulty, mining speed, and average block time
  */
-- (void)omcGetInfo;
+- (void)omcGetInfoWithCompletionHandler:(void (^)(NSDictionary *info))ch;
 
 /**
  *  getbalance: Returns the value of an Omnicoin address
  *
  *  @param address The address you'd like to value
  */
-- (void)omcGetBalanceWithAddress:(NSString *)address;
+- (void)omcGetBalanceWithAddress:(NSString *)address completionHandler:(void (^)(NSString *address, double balance))ch;
 
 /**
  *  checkaddress: A BOOL saying whether it's a real address or not
  *
  *  @param address The address you'd like to test
  */
-- (void)omcCheckAddressWithAddress:(NSString *)address;
+- (void)omcCheckAddressWithAddress:(NSString *)address completionHandler:(void (^)(NSString *address, BOOL isValid))ch;
 
 /**
  *  verifymessage: Returns whether the specified signature is as valid hash for the specified message for the specified address
@@ -149,24 +168,24 @@
  *  @param message   The message that was signed
  *  @param signature The signature generated from signing mesage with address
  */
-- (void)omcVerifyMessageWithAddress:(NSString *)address message:(NSString *)message signature:(NSString *)signature;
+- (void)omcVerifyMessageWithAddress:(NSString *)address message:(NSString *)message signature:(NSString *)signature completionHandler:(void (^)(NSString *address, NSString *message, NSString *signature, BOOL isVerified))ch;
 
 /**
  *  getrichlists: Returns data for generating the richlist on https://omnicha.in/richlist/
  */
-- (void)omcGetRichList;
+- (void)omcGetRichListWithCompletionHandler:(void (^)(NSArray *richList))ch;
 
 /**
  *  getwstats: Returns total users and total balance of all online wallet accounts
  */
-- (void)omcGetStats;
+- (void)omcGetStatsWithCompletionHandler:(void (^)(NSDictionary *stats))ch;
 
 /**
  *  earningscalc: The earningscalc method retuns the amount of OMC that will be mined with the specified hashrate
  *
  *  @param hashrate The hashrate in MH/s
  */
-- (void)omcCalculateEarningsWithHashrate:(double)hashrate;
+- (void)omcCalculateEarningsWithHashrate:(double)hashrate completionHandler:(void (^)(double hashrate, double difficulty, NSDictionary *data))ch;
 
 /**
  *  earningscalc: The earningscalc method returns the amount of OMC that will be mined with the specified hashrate and difficulty
@@ -174,7 +193,7 @@
  *  @param hashrate   The hashrate in MH/s
  *  @param difficulty The difficulty to base calculations on
  */
-- (void)omcCalculateEarningsWithHashrate:(double)hashrate difficulty:(double)difficulty;
+- (void)omcCalculateEarningsWithHashrate:(double)hashrate difficulty:(double)difficulty completionHandler:(void (^)(double hashrate, double difficulity, NSDictionary *data))ch;
 
 #pragma mark -
 
@@ -183,7 +202,7 @@
 /**
  *  Fills in the wallet properties
  */
-- (void)getWalletInfo;
+- (void)refreshWalletInfo;
 
 /**
  *  Registers a new account with Omnicha.in
@@ -192,7 +211,7 @@
  *  @param password        Password in plain text
  *  @param confirmPassword Password again in plain text (optional)
  */
-- (void)registerAccountWithUsername:(NSString *)username password:(NSString *)password confirmPassword:(NSString *)confirmPassword;
+- (void)registerAccountWithUsername:(NSString *)username password:(NSString *)password confirmPassword:(NSString *)confirmPassword success:(void (^)())successBlock failed:(void (^)(OMChainWallet *wallet, NSString *error))failureBlock;
 
 /**
  *  Registers a new account with Omnicha.in
@@ -200,7 +219,7 @@
  *  @param username        The username to register the account under
  *  @param password        Password in plain text
  */
-- (void)registerAccountWithUsername:(NSString *)username password:(NSString *)password;
+- (void)registerAccountWithUsername:(NSString *)username password:(NSString *)password success:(void (^)())successBlock failed:(void (^)(OMChainWallet *wallet, NSString *error))failureBlock;
 
 /**
  *  Creates an API request with specified values
@@ -215,7 +234,7 @@
  *
  *  @param email The new email address
  */
-- (void)changeEmailForAccountWithNewEmail:(NSString *)email;
+- (void)changeEmailForAccountWithNewEmail:(NSString *)email success:(void (^)())successBlock failed:(void (^)(OMChainWallet *wallet, NSString *error))failureBlock;
 
 /**
  *  Changes the users password
@@ -223,14 +242,14 @@
  *  @param password        Password in plain text
  *  @param confirmPassword Password again in plain text (optional)
  */
-- (void)changePasswordForAccountWithNewPassword:(NSString *)password confirmPassword:(NSString *)confirmPassword;
+- (void)changePasswordForAccountWithNewPassword:(NSString *)password confirmPassword:(NSString *)confirmPassword success:(void (^)())successBlock failed:(void (^)(OMChainWallet *wallet, NSString *error))failureBlock;
 
 /**
  *  Changes the users password
  *
  *  @param password Password in plain text
  */
-- (void)changePasswordForAccountWithNewPassword:(NSString *)password;
+- (void)changePasswordForAccountWithNewPassword:(NSString *)password success:(void (^)())successBlock failed:(void (^)(OMChainWallet *wallet, NSString *error))failureBlock;
 
 /**
  *  Signs a message with the specified address
@@ -238,7 +257,7 @@
  *  @param address A valid Omnicoin address
  *  @param message The message to sign
  */
-- (void)signMessageWithAddress:(NSString *)address message:(NSString *)message;
+- (void)signMessageWithAddress:(NSString *)address message:(NSString *)message success:(void (^)(NSString *address, NSString *message, NSString *signature))successBlock failed:(void (^)(OMChainWallet *wallet, NSString *error))failureBlock;
 
 /**
  *  Imports a private key into Omnicha.in (currently disabled)
@@ -253,12 +272,12 @@
  *  @param address Address to send Omnicoin to
  *  @param amount  The amount of Omnicoin to send to the address
  */
-- (void)sendOmnicoinToAddress:(NSString *)address amount:(double)amount;
+- (void)sendOmnicoinToAddress:(NSString *)address amount:(double)amount success:(void (^)())successBlock failed:(void (^)(OMChainWallet *wallet, NSString *error))failureBlock;
 
 /**
  *  Generates a new Omnicoin address
  */
-- (void)generateNewAddress;
+- (void)generateNewAddressWithSuccess:(void (^)(NSString *address))successBlock failed:(void (^)(OMChainWallet *wallet, NSString *error))failureBlock;
 
 #pragma mark -
 
@@ -275,15 +294,15 @@
  */
 - (void)omnichainFailedWithWallet:(OMChainWallet *)wallet error:(NSString *)error;
 
+@optional
 /**
  *  Called whenever the OMChainWallet object is successfully created
  *
  *  @param wallet The wallet the method passed with
  *  @param method Method that succeeded
  */
-- (void)omnichainSucceededWithWallet:(OMChainWallet *)wallet method:(NSString *)method;
+- (void)omnichainSucceededWithWallet:(OMChainWallet *)wallet method:(NSString *)method __attribute__((deprecated));
 
-@optional
 /**
  *  Called whenever an address is successfully signed
  *
@@ -291,21 +310,21 @@
  *  @param message   Message for the address
  *  @param signature The signature that was returned
  */
-- (void)signedMessageSuccessfullyWithAddress:(NSString *)address message:(NSString *)message signature:(NSString *)signature;
+- (void)signedMessageSuccessfullyWithAddress:(NSString *)address message:(NSString *)message signature:(NSString *)signature __attribute__((deprecated));
 
 /**
  *  Called whenever an address is successfully created
  *
  *  @param address The address that was created
  */
-- (void)successfullyCreatedOmnicoinAddressWithAddress:(NSString *)address;
+- (void)successfullyCreatedOmnicoinAddressWithAddress:(NSString *)address __attribute__((deprecated));
 
 /**
  *  Called whenever the getinfo method is called successfully
  *
  *  @param data A dictionary containing the response data. Ex. usage: [data valueForKey:@"block_count"];
  */
-- (void)gotInfoFromOmnichainSuccessfullyWithData:(NSDictionary *)data;
+- (void)gotInfoFromOmnichainSuccessfullyWithData:(NSDictionary *)data __attribute__((deprecated));
 
 /**
  *  Called whenever the delegate recieves knowledge on how much an address contains
@@ -313,7 +332,7 @@
  *  @param address The address that the value belongs to
  *  @param balance The value belonging to the address
  */
-- (void)gotBalanceFromOmnichainWithAddress:(NSString *)address balance:(double)balance;
+- (void)gotBalanceFromOmnichainWithAddress:(NSString *)address balance:(double)balance __attribute__((deprecated));
 
 /**
  *  Called whenever the delegate recieves knowledge whether or not the Omnicoin address is valid or not
@@ -321,7 +340,7 @@
  *  @param address        Address checked
  *  @param isValidAddress Boolean determining if it's a real address or not
  */
-- (void)gotIsValidAddressFromOmnichainWithAddress:(NSString *)address isValidAddress:(BOOL)isValidAddress;
+- (void)gotIsValidAddressFromOmnichainWithAddress:(NSString *)address isValidAddress:(BOOL)isValidAddress __attribute__((deprecated));
 
 /**
  *  Determines if a signed address is valid with a message (still have no idea what this is for)
@@ -331,21 +350,21 @@
  *  @param signature  Signature generated
  *  @param isVerified Whether or not this is a valid combo
  */
-- (void)gotIsValidSignedAddressWithAddress:(NSString *)address message:(NSString *)message signature:(NSString *)signature isVerified:(BOOL)isVerified;
+- (void)gotIsValidSignedAddressWithAddress:(NSString *)address message:(NSString *)message signature:(NSString *)signature isVerified:(BOOL)isVerified __attribute__((deprecated));
 
 /**
  *  Gets the list of Omnicha.in's richest users
  *
  *  @param data An array of all the users containing an NSDictionary for each
  */
-- (void)gotRichListFromOmnichainWithData:(NSArray *)data;
+- (void)gotRichListFromOmnichainWithData:(NSArray *)data __attribute__((deprecated));
 
 /**
  *  Called whenever the delegate knows about the current "wstats"
  *
  *  @param data An NSDictionary containing values for "users" and "balance" (balance of all users)
  */
-- (void)gotStatsFromOmnichainWithData:(NSDictionary *)data;
+- (void)gotStatsFromOmnichainWithData:(NSDictionary *)data __attribute__((deprecated));
 
 /**
  *  Called whenever the delegate knows how much a users might earn in a day, week, month, & year
@@ -354,6 +373,6 @@
  *  @param difficulty The difficulty passed in the method (can't be returned if not specified)
  *  @param data       Dictionary containing keys for day, week, month, & year
  */
-- (void)gotCalculatedEarningsFromOmnichainWithHashrate:(double)hashrate difficulty:(double)difficulty data:(NSDictionary *)data;
+- (void)gotCalculatedEarningsFromOmnichainWithHashrate:(double)hashrate difficulty:(double)difficulty data:(NSDictionary *)data __attribute__((deprecated));
 
 @end
