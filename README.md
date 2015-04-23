@@ -19,27 +19,21 @@ pod 'OMChainKit'
 ## Getting Started
 Creating a new `OMChainWallet` object is easy! Simply import your header file, conform your class to the `OMChainDelegate` and add:
 
-    OMChainWallet *wallet = [[OMChainWallet alloc] initWithUsername:@"username" password:@"password" delegate:self];
+    OMChainWallet *wallet = [[OMChainWallet alloc] initWithUsername:@"username" password:@"password" success:nil failed:nil];
 
-From there you can send whatever messages you need to your newly created `wallet` object. Make sure your `wallet` object is initialized with a username and password before you start sending `wallet_*` messages; not doing so will result in a crash. To avoid this, put all the code you want to run inside: 
+From there you can send whatever messages you need to your newly created `wallet` object. Make sure your `wallet` object is initialized with a username and password before you start sending `wallet_*` messages; not doing so will result in a crash. To avoid this, put all the code you want to run inside the `success block`.
 
-```- (void)omnichainSucceededWithWallet:(OMChainWallet *)wallet method:(NSString *)method```
+##Example
+In this example, I will sign into a fake account and change its email address:
+
+	OMChainWallet *exampleWallet = [[OMChainWallet alloc] initWithUsername:@"username" password:@"password" success:^(OMChainWallet *wallet) {
+		[exampleWallet changeEmailForAccountWithNewEmail:@"username@domain.com" success:^{
+			NSLog(@"Success!");
+		} failed:nil];
+	} failure:nil];
 
 ## Delegates
-> **`- (void)omnichainSucceededWithWallet:(OMChainWallet *)wallet method:(NSString *)method`**: Called whenever an API request succeeds. Use the method argument to see what the delegate is talking about.
-
--
-
-> **`- (void)omnichainFailedWithWallet:(OMChainWallet *)wallet error:(NSString *)error`**: Called whenever an API fails for a multitude of reasons. See all the errors associated with their methods at http://www.omnicha.in/api
-Use the error argument to see what the error was.
-
--
-
-> **`- (void)signedMessageSuccessfullyWithAddress:(NSString *)address message:(NSString *)message signature:(NSString *)signature`**: Called whenever a message has been signed to an address successfully. Use the address, message, and signature arguments to get information on what was created.
-
--
-
-> **`- (void)successfullyCreatedOmnicoinAddressWithAddress:(NSString *)address`**: Called whenever a new Omnicoin address was created. Use the address argument to see the address of the newly created address.
+> **`- (void)omnichainFailedWithWallet:(OMChainWallet *)wallet error:(NSString *)error`**: Called whenever something fails. Check error for what API request is failing.
 
 ## Current Methods
 #### OMChainWallet
