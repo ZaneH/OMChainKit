@@ -40,6 +40,14 @@
 	XCTAssert(self.blankWallet.version == 0);
 }
 
+- (void)test_walletSignIn_isError {
+	_blankWallet = [[OMChainWallet alloc] initWithUsername:@"blank" password:@"blank" success:^(OMChainWallet *wallet) {
+		XCTFail(@"Shouldn't pass.");
+	} failure:^(OMChainWallet *wallet, NSString *error) {
+		XCTAssert([error isEqualToString:@"BAD_LOGIN"]);
+	}];
+}
+
 - (void)tearDown {
     [super tearDown];
 }

@@ -25,13 +25,13 @@
 	SignInSuccess _successBlock;
 	SignMessageSuccess _signMessageSuccessBlock;
 	AddressCreateSuccess _addressCreateSuccessBlock;
-	GetInfoSuccess _getInfoSuccessBlock;
-	GetBalanceSuccess _getBalanceSuccessBlock;
-	IsValidAddressSuccess _isValidAddressSuccessBlock;
-	IsValidSignatureSuccess _isValidSignatureSuccessBlock;
-	GetRichListSuccess _getRichListSuccessBlock;
-	GetStatsSuccess _getStatsSuccessBlock;
-	GetCalculatedEarningsSuccess _getCalculatedEarningsSuccessBlock;
+	GetInfoComplete _getInfoCompleteBlock;
+	GetBalanceComplete _getBalanceCompleteBlock;
+	IsValidAddressComplete _isValidAddressCompleteBlock;
+	IsValidSignatureComplete _isValidSignatureCompleteBlock;
+	GetRichListComplete _getRichListCompleteBlock;
+	GetStatsComplete _getStatsCompleteBlock;
+	GetCalculatedEarningsComplete _getCalculatedEarningsCompleteBlock;
 	
 	RegisterSuccess _registerSuccessBlock;
 	ChangeEmailSuccess _changeEmailSuccessBlock;
@@ -97,60 +97,68 @@
 
 #pragma mark - Mostly Statistics API Interaction Method Declarations
 
-- (void)omcGetInfoWithCompletionHandler:(void (^)(NSDictionary *info))ch {
-	_getInfoSuccessBlock = ch;
+- (void)omcGetInfoWithCompletionHandler:(void (^)(NSDictionary *info, NSString *error))ch {
+	_getInfoCompleteBlock = ch;
 	[self createAPIRequestWithMethod:@"getinfo"
 							  params:@{}];
 }
 
-- (void)omcGetBalanceWithAddress:(NSString *)address completionHandler:(void (^)(NSString *address, double balance))ch {
+- (void)omcGetBalanceWithAddress:(NSString *)address
+			   completionHandler:(void (^)(NSString *address, double balance, NSString *error))ch {
 	_tempAddress = address;
-	_getBalanceSuccessBlock = ch;
+	_getBalanceCompleteBlock = ch;
 	[self createAPIRequestWithMethod:@"getbalance"
 							  params:@{@"address":address}];
 }
 
-- (void)omcCheckAddressWithAddress:(NSString *)address completionHandler:(void (^)(NSString *address, BOOL isValid))ch {
+- (void)omcCheckAddressWithAddress:(NSString *)address
+				 completionHandler:(void (^)(NSString *address, BOOL isValid, NSString *error))ch {
 	_tempAddress = address;
-	_isValidAddressSuccessBlock = ch;
+	_isValidAddressCompleteBlock = ch;
 	[self createAPIRequestWithMethod:@"checkaddress"
 							  params:@{@"address":address}];
 }
 
-- (void)omcVerifyMessageWithAddress:(NSString *)address message:(NSString *)message signature:(NSString *)signature completionHandler:(void (^)(NSString *address, NSString *message, NSString *signature, BOOL isVerified))ch {
+- (void)omcVerifyMessageWithAddress:(NSString *)address
+							message:(NSString *)message
+						  signature:(NSString *)signature
+				  completionHandler:(void (^)(NSString *address, NSString *message, NSString *signature, BOOL isVerified, NSString *error))ch {
 	_tempAddress = address;
 	_tempMessage = message;
 	_tempSignature = signature;
-	_isValidSignatureSuccessBlock = ch;
+	_isValidSignatureCompleteBlock = ch;
 	[self createAPIRequestWithMethod:@"verifymessage"
 							  params:@{@"address":address,
 									   @"message":message,
 									   @"signature":signature}];
 }
 
-- (void)omcGetRichListWithCompletionHandler:(void (^)(NSArray *richList))ch {
-	_getRichListSuccessBlock = ch;
+- (void)omcGetRichListWithCompletionHandler:(void (^)(NSArray *richList, NSString *error))ch {
+	_getRichListCompleteBlock = ch;
 	[self createAPIRequestWithMethod:@"getrichlist"
 							  params:@{}];
 }
 
-- (void)omcGetStatsWithCompletionHandler:(void (^)(NSDictionary *stats))ch {
-	_getStatsSuccessBlock = ch;
+- (void)omcGetStatsWithCompletionHandler:(void (^)(NSDictionary *stats, NSString *error))ch {
+	_getStatsCompleteBlock = ch;
 	[self createAPIRequestWithMethod:@"getwstats"
 							  params:@{}];
 }
 
-- (void)omcCalculateEarningsWithHashrate:(double)hashrate completionHandler:(void (^)(double hashrate, double difficulty, NSDictionary *data))ch {
+- (void)omcCalculateEarningsWithHashrate:(double)hashrate
+					   completionHandler:(void (^)(double hashrate, double difficulty, NSDictionary *data, NSString *error))ch {
 	_tempHashrate = hashrate;
-	_getCalculatedEarningsSuccessBlock = ch;
+	_getCalculatedEarningsCompleteBlock = ch;
 	[self createAPIRequestWithMethod:@"earningscalc"
 							  params:@{@"hashrate":[NSNumber numberWithDouble:hashrate]}];
 }
 
-- (void)omcCalculateEarningsWithHashrate:(double)hashrate difficulty:(double)difficulty completionHandler:(void (^)(double hashrate, double difficulty, NSDictionary *data))ch {
+- (void)omcCalculateEarningsWithHashrate:(double)hashrate
+							  difficulty:(double)difficulty
+					   completionHandler:(void (^)(double hashrate, double difficulty, NSDictionary *data, NSString *error))ch {
 	_tempHashrate = hashrate;
 	_tempDifficulty = difficulty;
-	_getCalculatedEarningsSuccessBlock = ch;
+	_getCalculatedEarningsCompleteBlock = ch;
 	[self createAPIRequestWithMethod:@"earningscalc"
 							  params:@{@"hashrate":[NSNumber numberWithDouble:hashrate],
 									   @"difficulty":[NSNumber numberWithDouble:difficulty]}];
@@ -503,7 +511,7 @@
 		if (!error) {
 			// check if request is valid
 			if ([[jsonObject valueForKey:@"error"] boolValue] == 1) {
-				_getInfoSuccessBlock(nil);
+				_getInfoCompleteBlock(nil, [jsonObject valueForKey:@"error_info"]);
 				[self.delegate omnichainFailedWithWallet:self error:@"getinfo"];
 				return;
 			}
@@ -518,10 +526,10 @@
 											 @"omc_usd_price":[NSNumber numberWithDouble:[[[jsonObject valueForKey:@"response"] valueForKey:@"omc_usd_price"] doubleValue]],
 											 @"market_cap":[NSNumber numberWithDouble:[[[jsonObject valueForKey:@"response"] valueForKey:@"market_cap"] doubleValue]],
 											 @"block_reward":[NSNumber numberWithDouble:[[[jsonObject valueForKey:@"response"] valueForKey:@"block_reward"] doubleValue]]};
-			_getInfoSuccessBlock(infoDictionary);
+			_getInfoCompleteBlock(infoDictionary, nil);
 			return;
 		} else {
-			_getInfoSuccessBlock(nil);
+			_getInfoCompleteBlock(nil, [jsonObject valueForKey:@"error_info"]);
 			[self.delegate omnichainFailedWithWallet:self error:@"getinfo"];
 			return;
 		}
@@ -538,14 +546,14 @@
 		if (!error) {
 			// check if request is valid
 			if ([[jsonObject valueForKey:@"error"] boolValue] == 1) {
-				_getBalanceSuccessBlock(nil, 0);
+				_getBalanceCompleteBlock(nil, 0, [jsonObject valueForKey:@"error_info"]);
 				[self.delegate omnichainFailedWithWallet:self error:@"getbalance"];
 				return;
 			}
-			_getBalanceSuccessBlock(_tempAddress, [[[jsonObject valueForKey:@"response"] valueForKey:@"balance"] doubleValue]);
+			_getBalanceCompleteBlock(_tempAddress, [[[jsonObject valueForKey:@"response"] valueForKey:@"balance"] doubleValue], nil);
 			return;
 		} else {
-			_getBalanceSuccessBlock(nil, 0);
+			_getBalanceCompleteBlock(nil, 0, [jsonObject valueForKey:@"error_info"]);
 			[self.delegate omnichainFailedWithWallet:self error:@"getbalance"];
 			return;
 		}
@@ -562,14 +570,14 @@
 		if (!error) {
 			// check if request is valid
 			if ([[jsonObject valueForKey:@"error"] boolValue] == 1) {
-				_isValidAddressSuccessBlock(nil, 0);
+				_isValidAddressCompleteBlock(nil, 0, [jsonObject valueForKey:@"error_info"]);
 				[self.delegate omnichainFailedWithWallet:self error:@"checkaddress"];
 				return;
 			}
-			_isValidAddressSuccessBlock(_tempAddress, [[[jsonObject valueForKey:@"response"] valueForKey:@"isvalid"] boolValue]);
+			_isValidAddressCompleteBlock(_tempAddress, [[[jsonObject valueForKey:@"response"] valueForKey:@"isvalid"] boolValue], nil);
 			return;
 		} else {
-			_isValidAddressSuccessBlock(nil, 0);
+			_isValidAddressCompleteBlock(nil, 0, [jsonObject valueForKey:@"error_info"]);
 			[self.delegate omnichainFailedWithWallet:self error:@"checkaddress"];
 			return;
 		}
@@ -586,14 +594,14 @@
 		if (!error) {
 			// check if request is valid
 			if ([[jsonObject valueForKey:@"error"] boolValue] == 1) {
-				_isValidSignatureSuccessBlock(nil, nil, nil, 0);
+				_isValidSignatureCompleteBlock(nil, nil, nil, 0, nil);
 				[self.delegate omnichainFailedWithWallet:self error:@"verifymessage"];
 				return;
 			}
-			_isValidSignatureSuccessBlock(_tempAddress, _tempMessage, _tempSignature, [[[jsonObject valueForKey:@"response"] valueForKey:@"isvalid"] boolValue]);
+			_isValidSignatureCompleteBlock(_tempAddress, _tempMessage, _tempSignature, [[[jsonObject valueForKey:@"response"] valueForKey:@"isvalid"] boolValue], nil);
 			return;
 		} else {
-			_isValidSignatureSuccessBlock(nil, nil, nil, 0);
+			_isValidSignatureCompleteBlock(nil, nil, nil, 0, [jsonObject valueForKey:@"error_info"]);
 			[self.delegate omnichainFailedWithWallet:self error:@"verifymessage"];
 			return;
 		}
@@ -610,7 +618,7 @@
 		if (!error) {
 			// check if request is valid
 			if ([[jsonObject valueForKey:@"error"] boolValue] == 1) {
-				_getRichListSuccessBlock(nil);
+				_getRichListCompleteBlock(nil, [jsonObject valueForKey:@"error_info"]);
 				[self.delegate omnichainFailedWithWallet:self error:@"getrichlist"];
 				return;
 			}
@@ -625,10 +633,10 @@
 												 @"vanity_name":[[[[jsonObject valueForKey:@"response"] valueForKey:@"richlist"] objectAtIndex:personIndex] valueForKey:@"vanity_name"]};
 				[richList addObject:tempPersonDictionary];
 			}
-			_getRichListSuccessBlock([NSArray arrayWithArray:richList]);
+			_getRichListCompleteBlock([NSArray arrayWithArray:richList], nil);
 			return;
 		} else {
-			_getRichListSuccessBlock(nil);
+			_getRichListCompleteBlock(nil, [jsonObject valueForKey:@"error_info"]);
 			[self.delegate omnichainFailedWithWallet:self error:@"getrichlist"];
 			return;
 		}
@@ -645,16 +653,16 @@
 		if (!error) {
 			// check if request is valid
 			if ([[jsonObject valueForKey:@"error"] boolValue] == 1) {
-				_getStatsSuccessBlock(nil);
+				_getStatsCompleteBlock(nil, [jsonObject valueForKey:@"error_info"]);
 				[self.delegate omnichainFailedWithWallet:self error:@"getwstats"];
 				return;
 			}
 			NSDictionary *statsDictionary = @{@"users":[NSNumber numberWithInteger:[[[jsonObject valueForKey:@"response"] valueForKey:@"users"] integerValue]],
 											  @"balance":[NSNumber numberWithDouble:[[[jsonObject valueForKey:@"response"] valueForKey:@"balance"] doubleValue]]};
-			_getStatsSuccessBlock(statsDictionary);
+			_getStatsCompleteBlock(statsDictionary, nil);
 			return;
 		} else {
-			_getStatsSuccessBlock(nil);
+			_getStatsCompleteBlock(nil, [jsonObject valueForKey:@"error_info"]);
 			[self.delegate omnichainFailedWithWallet:self error:@"getwstats"];
 			return;
 		}
@@ -671,7 +679,7 @@
 		if (!error) {
 			// check if request is valid
 			if ([[jsonObject valueForKey:@"error"] boolValue] == 1) {
-				_getCalculatedEarningsSuccessBlock(0, 0, nil);
+				_getCalculatedEarningsCompleteBlock(0, 0, nil, [jsonObject valueForKey:@"error_info"]);
 				[self.delegate omnichainFailedWithWallet:self error:@"earningscalc"];
 				return;
 			}
@@ -679,10 +687,10 @@
 											  @"weekly":[NSNumber numberWithDouble:[[[jsonObject valueForKey:@"response"] valueForKey:@"weekly"] doubleValue]],
 											  @"monthly":[NSNumber numberWithDouble:[[[jsonObject valueForKey:@"response"] valueForKey:@"monthly"] doubleValue]],
 											  @"yearly":[NSNumber numberWithDouble:[[[jsonObject valueForKey:@"response"] valueForKey:@"yearly"] doubleValue]]};
-			_getCalculatedEarningsSuccessBlock(_tempHashrate, _tempDifficulty, estimationDictionary);
+			_getCalculatedEarningsCompleteBlock(_tempHashrate, _tempDifficulty, estimationDictionary, nil);
 			return;
 		} else {
-			_getCalculatedEarningsSuccessBlock(0, 0, nil);
+			_getCalculatedEarningsCompleteBlock(0, 0, nil, [jsonObject valueForKey:@"error_info"]);
 			[self.delegate omnichainFailedWithWallet:self error:@"earningscalc"];
 			return;
 		}

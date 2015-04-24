@@ -93,43 +93,71 @@
 	
 	switch (indexPath.row) {
 		case 0: {
-			[_exampleWallet omcGetInfoWithCompletionHandler:^(NSDictionary *info) {
+			[_exampleWallet omcGetInfoWithCompletionHandler:^(NSDictionary *info, NSString *error) {
+				if (error) {
+					[[[UIAlertView alloc] initWithTitle:@"Error" message:error delegate:self cancelButtonTitle:@"Dismiss" otherButtonTitles:nil] show];
+					return;
+				}
 				[[[UIAlertView alloc] initWithTitle:@"Success!" message:info.description delegate:self cancelButtonTitle:@"Dismiss" otherButtonTitles: nil] show];
 			}];
 			break;
 		}
 		case 1: {
-			[_exampleWallet omcGetBalanceWithAddress:@"" completionHandler:^(NSString *address, double balance) {
+			[_exampleWallet omcGetBalanceWithAddress:@"oTrArkBbBdsRTAGbher1X9ZmhnHZjMnM1k" completionHandler:^(NSString *address, double balance, NSString *error) {
+				if (error) {
+					[[[UIAlertView alloc] initWithTitle:@"Error" message:error delegate:self cancelButtonTitle:@"Dismiss" otherButtonTitles:nil] show];
+					return;
+				}
 				[[[UIAlertView alloc] initWithTitle:@"Success!" message:[NSString stringWithFormat:@"Address: %@\nBalance: %f", address, balance] delegate:self cancelButtonTitle:@"Dismiss" otherButtonTitles: nil] show];
 			}];
 			break;
 		}
 		case 2: {
-			[_exampleWallet omcCheckAddressWithAddress:@"oTrArkBbBdsRTAGbher1X9ZmhnHZjMnM1k" completionHandler:^(NSString *address, BOOL isValid) {
+			[_exampleWallet omcCheckAddressWithAddress:@"oTrArkBbBdsRTAGbher1X9ZmhnHZjMnM1k" completionHandler:^(NSString *address, BOOL isValid, NSString *error) {
+				if (error) {
+					[[[UIAlertView alloc] initWithTitle:@"Error" message:error delegate:self cancelButtonTitle:@"Dismiss" otherButtonTitles:nil] show];
+					return;
+				}
 				[[[UIAlertView alloc] initWithTitle:@"Success!" message:[NSString stringWithFormat:@"Address: %@\nisValid: %d", address, isValid] delegate:self cancelButtonTitle:@"Dismiss" otherButtonTitles: nil] show];
 			}];
 			break;
 		}
 		case 3: {
-			[_exampleWallet omcVerifyMessageWithAddress:@"oTrArkBbBdsRTAGbher1X9ZmhnHZjMnM1k" message:@"Created by ZaneH" signature:@"Fake Signature" completionHandler:^(NSString *address, NSString *message, NSString *signature, BOOL isVerified) {
+			[_exampleWallet omcVerifyMessageWithAddress:@"oTrArkBbBdsRTAGbher1X9ZmhnHZjMnM1k" message:@"Created by ZaneH" signature:@"Fake Signature" completionHandler:^(NSString *address, NSString *message, NSString *signature, BOOL isVerified, NSString *error) {
+				if (error) {
+					[[[UIAlertView alloc] initWithTitle:@"Error" message:error delegate:self cancelButtonTitle:@"Dismiss" otherButtonTitles:nil] show];
+					return;
+				}
 				[[[UIAlertView alloc] initWithTitle:@"Success!" message:[NSString stringWithFormat:@"Address: %@\nMessage: %@\nSignature: %@\nisVerified: %d", address, message, signature, isVerified] delegate:self cancelButtonTitle:@"Dismiss" otherButtonTitles: nil] show];
 			}];
 			break;
 		}
 		case 4: {
-			[_exampleWallet omcGetRichListWithCompletionHandler:^(NSArray *richList) {
+			[_exampleWallet omcGetRichListWithCompletionHandler:^(NSArray *richList, NSString *error) {
+				if (error) {
+					[[[UIAlertView alloc] initWithTitle:@"Error" message:error delegate:self cancelButtonTitle:@"Dismiss" otherButtonTitles:nil] show];
+					return;
+				}
 				[[[UIAlertView alloc] initWithTitle:@"Success!" message:[NSString stringWithFormat:@"Rich List: %@", richList.description] delegate:self cancelButtonTitle:@"Dismiss" otherButtonTitles: nil] show];
 			}];
 			break;
 		}
 		case 5: {
-			[_exampleWallet omcGetStatsWithCompletionHandler:^(NSDictionary *stats) {
+			[_exampleWallet omcGetStatsWithCompletionHandler:^(NSDictionary *stats, NSString *error) {
+				if (error) {
+					[[[UIAlertView alloc] initWithTitle:@"Error" message:error delegate:self cancelButtonTitle:@"Dismiss" otherButtonTitles:nil] show];
+					return;
+				}
 				[[[UIAlertView alloc] initWithTitle:@"Success!" message:[NSString stringWithFormat:@"Stats: %@", stats.description] delegate:self cancelButtonTitle:@"Dismiss" otherButtonTitles: nil] show];
 			}];
 			break;
 		}
 		case 6: {
-			[_exampleWallet omcCalculateEarningsWithHashrate:34 completionHandler:^(double hashrate, double difficulty, NSDictionary *data) {
+			[_exampleWallet omcCalculateEarningsWithHashrate:34 completionHandler:^(double hashrate, double difficulty, NSDictionary *data, NSString *error) {
+				if (error) {
+					[[[UIAlertView alloc] initWithTitle:@"Error" message:error delegate:self cancelButtonTitle:@"Dismiss" otherButtonTitles:nil] show];
+					return;
+				}
 				[[[UIAlertView alloc] initWithTitle:@"Success!" message:[NSString stringWithFormat:@"Hashrate: %f\nDifficulty: %f\nData: %@", hashrate, difficulty, data] delegate:self cancelButtonTitle:@"Dismiss" otherButtonTitles: nil] show];
 			}];
 		}
@@ -141,10 +169,6 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 	return _methods.count;
-}
-
-- (void)omnichainFailedWithWallet:(OMChainWallet *)wallet error:(NSString *)error {
-	[[[UIAlertView alloc] initWithTitle:@"Error" message:[NSString stringWithFormat:@"An unexpected error occured when attempting: %@", error] delegate:self cancelButtonTitle:@"Dismiss" otherButtonTitles: nil] show];
 }
 
 @end
