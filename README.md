@@ -32,6 +32,23 @@ In this example, I will sign into a fake account and change its email address:
 		} failed:nil];
 	} failure:nil];
 
+-
+In this example, I will sign into a fake account. If the sign in is successfull it'll retrieve the Omnicha.in rich list, if retrieving the rich list fails, the message "Failed getting the rich list." is logged, otherwise it'll log the contents of the rich list. If the sign in fails, it'll check if the error was "BAD_LOGIN" and if it was it'll log "Username or password incorrect."
+
+	OMChainWallet *exampleWallet = [[OMChainWallet alloc] initWithUsername:@"username" password:@"password" success:^(OMChainWallet *wallet) {
+		[_exampleWallet omcGetRichListWithCompletionHandler:^(NSArray *richList, NSString *error) {
+			if (error) {
+				NSLog(@"Failed getting the rich list.");
+				return;
+			}
+			NSLog(@"%@", richList.description);
+		}];
+	} failure:^(OMChainWallet *wallet, NSString *error) {
+		if ([error isEqualToString:@"BAD_LOGIN"]) {
+			NSLog(@"Username or password incorrect.");
+		}
+	}];
+
 ## Delegates
 > **`- (void)omnichainFailedWithWallet:(OMChainWallet *)wallet error:(NSString *)error`**: Called whenever something fails. Check error for what API request is failing.
 
