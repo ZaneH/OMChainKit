@@ -98,10 +98,6 @@ In this example, I will sign into a fake account. If the sign in is successfull 
 
 -
 
-> **`- (void)importPrivateKeyWithKey:(NSString *)privateKey address:(NSString *)address`**: **DEPRECATED**. ([wallet_importkey](https://omnicha.in/api#wallet_importkey-docs))
-
--
-
 > **`- (void)sendOmnicoinToAddress:(NSString *)address amount:(double)amount`**: Send Omnicoins to a specified address with a specified amount. Check the delegate call for more details. ([wallet_send](https://omnicha.in/api#wallet_send-docs))
 
 -
