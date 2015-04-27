@@ -16,11 +16,11 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "OMChainKit"
-  s.version      = "1.2.1"
+  s.version      = "1.2.2"
   s.summary      = "A complete API wrapper for Omnicha.in"
 
   s.description  = 'Creating applications for Omnicoin couldn\'t be made simpler with this library.'              \
-                   'This library allows full access to the Omnicha.in API using delegates that make interactions' \
+                   'This library allows full access to the Omnicha.in API using blocks that make interactions' \
                    'with the site very simple and easy to use.'
 
   s.homepage     = "http://www.github.com/ZaneH/OMChainKit"
