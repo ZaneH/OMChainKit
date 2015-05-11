@@ -1,5 +1,11 @@
-# OMChainKit [![Build Status](https://travis-ci.org/ZaneH/OMChainKit.svg?branch=master)](https://travis-ci.org/ZaneH/OMChainKit)
+# OMChainKit v0.8.0 [![Build Status](https://travis-ci.org/ZaneH/OMChainKit.svg?branch=master)](https://travis-ci.org/ZaneH/OMChainKit)
 An API wrapper for https://omnicha.in/api
+
+## Documentation
+
+### Cocoadocs
+OMChainWallet is the only class you need to look at for functional methods. The other classes might as well be structs.
+http://cocoadocs.org/docsets/OMChainKit/1.2.1/Classes/OMChainWallet.html
 
 ## Installing the Project
 
@@ -48,7 +54,3 @@ In this example, I will sign into a fake account. If the sign in is successfull 
 			NSLog(@"Username or password incorrect.");
 		}
 	}];
-
-##Cocoadocs
-OMChainWallet is the only class you need to look at for functional methods. The other classes might as well be structs.
-http://cocoadocs.org/docsets/OMChainKit/1.2.1/Classes/OMChainWallet.html
