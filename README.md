@@ -11,12 +11,10 @@ http://cocoadocs.org/docsets/OMChainKit/1.2.1/Classes/OMChainWallet.html
 
 ### Cocoapods
 1. Install Cocoapod `pod 'OMChainKit'`
-2. 
 2. Run `pod install`
 
 ### Manual Install
 1. Download the .zip file from GitHub
-
 2. Open the `Source` folder and drag all the files into your Xcode project
 
 ## Getting Started
