@@ -42,14 +42,12 @@
 
 #pragma mark - Initializers
 
-- (instancetype)initWithUsername:(NSString *)username password:(NSString *)password success:(void (^)(OMChainWallet *wallet))successBlock failure:(void (^)(OMChainWallet *wallet, NSString *error))failureBlock {
+- (instancetype)initWithUsername:(NSString *)username password:(NSString *)password {
 	self = [super init];
 	if (self) {
 		self.username = username;
 		self.passwordHash = [self createSHA512WithString:password];
 		_timeOutInterval = 60;
-		_successBlock = successBlock;
-		_failedBlock = failureBlock;
 	}
 	return self;
 }
