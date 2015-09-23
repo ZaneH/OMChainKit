@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "OMChainKit"
-  s.version      = "1.2.8"
+  s.version      = "1.2.9"
   s.summary      = "A complete API wrapper for Omnicha.in"
 
   s.description  = 'Creating applications for Omnicoin couldn\'t be made simpler with this library.'              \

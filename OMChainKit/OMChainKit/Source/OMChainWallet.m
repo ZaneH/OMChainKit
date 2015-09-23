@@ -284,6 +284,10 @@
 	[NSURLConnection connectionWithRequest:callMethodRequest delegate:self];
 }
 
+- (void)stopCurrentRequest {
+	[NSURLConnection cancelPreviousPerformRequestsWithTarget:self];
+}
+
 #pragma mark - NSURLConnection Delegate Methods
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {

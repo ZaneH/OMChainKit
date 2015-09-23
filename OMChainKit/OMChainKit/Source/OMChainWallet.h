@@ -132,7 +132,17 @@ typedef void (^GenerateAddressSuccess)(NSString *address);
 
 #pragma mark - Configuration Methods
 
+/**
+ *  Set a timeout for the current request
+ *
+ *  @param timeOut A timeout in seconds
+ */
 - (void)setTimout:(NSUInteger)timeOut;
+
+/**
+ *  Ends the current API request
+ */
+- (void)stopCurrentRequest;
 
 #pragma mark - Mostly Statistics API Interaction Method Declarations
 
