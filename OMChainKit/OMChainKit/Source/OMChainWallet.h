@@ -219,7 +219,7 @@ typedef void (^GenerateAddressSuccess)(NSString *address);
  */
 - (void)attemptSignInWithWallet:(OMChainWallet *)wallet
 						success:(void (^)())successBlock
-						 failed:(void (^)(OMChainWallet *wallet, NSString *))failureBlock;
+						 failed:(void (^)(OMChainWallet *wallet, NSString *error))failureBlock;
 
 /**
  *  Registers a new account with Omnicha.in
