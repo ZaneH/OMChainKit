@@ -159,12 +159,12 @@
 
 #pragma mark - API Interaction Methods
 
-- (void)attemptSignInWithWallet:(OMChainWallet *)wallet success:(void (^)())successBlock failed:(void (^)(OMChainWallet *, NSString *error))failureBlock {
+- (void)attemptSignInWithSuccess:(void (^)())successBlock failed:(void (^)(OMChainWallet *, NSString *))failureBlock {
 	_successBlock = successBlock;
 	_failedBlock = failureBlock;
 	[self createAPIRequestWithMethod:@"wallet_login"
-							  params:@{@"username":wallet.username,
-									   @"password":wallet.passwordHash}];
+							  params:@{@"username":self.username,
+									   @"password":self.passwordHash}];
 }
 
 - (void)registerAccountWithUsername:(NSString *)username password:(NSString *)password success:(void (^)())successBlock failed:(void (^)(OMChainWallet *wallet, NSString *error))failureBlock {

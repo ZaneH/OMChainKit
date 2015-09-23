@@ -217,9 +217,8 @@ typedef void (^GenerateAddressSuccess)(NSString *address);
  *
  *  @param wallet       Initialized wallet with username and password
  */
-- (void)attemptSignInWithWallet:(OMChainWallet *)wallet
-						success:(void (^)())successBlock
-						 failed:(void (^)(OMChainWallet *wallet, NSString *error))failureBlock;
+- (void)attemptSignInWithSuccess:(void (^)())successBlock
+						  failed:(void (^)(OMChainWallet *wallet, NSString *error))failureBlock;
 
 /**
  *  Registers a new account with Omnicha.in
