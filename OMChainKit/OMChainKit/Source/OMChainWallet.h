@@ -213,6 +213,15 @@ typedef void (^GenerateAddressSuccess)(NSString *address);
 - (void)refreshWalletInfo;
 
 /**
+ *  Attempts to sign in with a wallet
+ *
+ *  @param wallet       Initialized wallet with username and password
+ */
+- (void)attemptSignInWithWallet:(OMChainWallet *)wallet
+						success:(void (^)())successBlock
+						 failed:(void (^)(OMChainWallet *wallet, NSString *))failureBlock;
+
+/**
  *  Registers a new account with Omnicha.in
  *
  *  @param username        The username to register the account under
