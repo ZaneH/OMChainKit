@@ -341,7 +341,8 @@
 			self.balance = [[response valueForKey:@"balance"] doubleValue];
 			self.pendingBalance = [[response valueForKey:@"pending_balance"] doubleValue];
 			
-			for (int transactionIndex = 0; transactionIndex < [[response valueForKey:@"transactions"] count]; transactionIndex++) {
+			NSArray *transactionsArray = [response valueForKey:@"transactions"];
+			for (int transactionIndex = 0; transactionIndex < [transactionsArray count]; transactionIndex++) {
 				OMChainTransaction *newTransaction = [[OMChainTransaction alloc] init];
 				newTransaction.date = [[[response valueForKey:@"transactions"] objectAtIndex:transactionIndex] valueForKey:@"date"];
 				newTransaction.confirmations = [[[[response valueForKey:@"transactions"] objectAtIndex:transactionIndex] valueForKey:@"confirmations"] integerValue];
@@ -352,7 +353,8 @@
 				[self.transactions insertObject:newTransaction atIndex:0];
 			}
 			
-			for (int addressIndex = 0; addressIndex < [[response valueForKey:@"addresses"] count]; addressIndex++) {
+			NSArray *addressesArray = [response valueForKey:@"addresses"];
+			for (int addressIndex = 0; addressIndex < [addressesArray count]; addressIndex++) {
 				OMChainAddress *newAddress = [[OMChainAddress alloc] init];
 				newAddress.address = [[[response valueForKey:@"addresses"] objectAtIndex:addressIndex] valueForKey:@"address"];
 				newAddress.privateKey = [[[response valueForKey:@"addresses"] objectAtIndex:addressIndex] valueForKey:@"private_key"];
