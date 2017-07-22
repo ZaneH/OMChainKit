@@ -7,7 +7,7 @@ An API wrapper for https://omnicha.in/api
 
 ### Cocoadocs
 OMChainWallet is the only class you need to look at for functional methods. The other classes might as well be structs.
-http://cocoadocs.org/docsets/OMChainKit/1.2.1/Classes/OMChainWallet.html
+http://cocoadocs.org/docsets/OMChainKit/1.3.1/Classes/OMChainWallet.html
 
 ## Installing the Project
 
