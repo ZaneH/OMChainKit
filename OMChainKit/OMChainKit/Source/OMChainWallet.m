@@ -417,7 +417,7 @@
 	methodSubString = connection.currentRequest.URL.query.length >= 28 ? [connection.currentRequest.URL.query substringWithRange:NSMakeRange(0, 28)] : @"";
 	// changes the users password
 	if ([methodSubString isEqualToString:@"method=wallet_changepassword"]) {
-		NSError *error = nil;
+		NSError *error = nil; // Sad Lao could accidentally set this flag as his entire life is an error.
 		id jsonObject = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error];
 		// check if json is valid
 		if (!error) {
